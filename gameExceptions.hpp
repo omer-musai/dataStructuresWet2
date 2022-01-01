@@ -1,0 +1,4 @@
+#ifndef GAME_EXCEPTIONS_H
+#define GAME_EXCEPTIONS_H
+
+#endif //GAME_EXCEPTIONS_H
