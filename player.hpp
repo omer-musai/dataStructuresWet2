@@ -14,19 +14,19 @@ class Player
             Player(int player_id, int group_id, int score) : player_id(player_id), group_id(group_id), score(score), level(0) {}
 
 
-            int getPlayerId()
+            int getPlayerId() const
             {
                 return player_id;
             }
-            int getGroupId()
+            int getGroupId() const
             {
                 return group_id;
             }
-            int getScore()
+            int getScore() const
             {
                 return score;
             }
-            int getLevel()
+            int getLevel() const
             {
                 return level;
             }
