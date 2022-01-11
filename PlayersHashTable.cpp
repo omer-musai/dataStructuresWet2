@@ -43,7 +43,7 @@ void PlayersHashTable::contract()
 
 float PlayersHashTable::getLoadFactor() const
 {
-    return ((float)tableLength) / (float)playerCount;
+    return ((float)playerCount) / (float)tableLength;
 }
 
 void PlayersHashTable::rehash()
