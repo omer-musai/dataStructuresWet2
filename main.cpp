@@ -1,6 +1,9 @@
 #include <iostream>
 #include "SumTree.hpp"
 #include "PlayersHashTable.hpp"
+#include "GroupsUnionFind.hpp"
+
+using std::cout;
 
 int main()
 {
@@ -29,5 +32,19 @@ int main()
     player = table.search(1);
     std::cout << player.getPlayerId() << ", " << player.getGroupId() << ", " << player.getScore()
         << ", " << player.getLevel() << std::endl;
+
+    std::cout << std::endl << "Union/Find:" << std::endl;
+    GroupsUnionFind UF(5, 10);
+
+    for(int g = 0; g < 5; ++g)
+    {
+        UF.findGroup(g).getPlayers()->get()->getSize();
+    }
+
+    for(int g = 0; g < 5; ++g)
+    {
+        cout << "g" << g << ": " << UF.findGroup(g).getPlayers()->get()->getSize();
+    }
+
     return 0;
 }

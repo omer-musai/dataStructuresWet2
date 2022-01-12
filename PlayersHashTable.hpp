@@ -1,7 +1,7 @@
 #ifndef PLAYGROUND_PLAYERSHASHTABLE_HPP
 #define PLAYGROUND_PLAYERSHASHTABLE_HPP
 
-#include "player.hpp"
+#include "Player.hpp"
 #include "game_exceptions.hpp"
 #include <cassert>
 
