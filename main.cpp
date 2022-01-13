@@ -36,14 +36,18 @@ int main()
     std::cout << std::endl << "Union/Find:" << std::endl;
     GroupsUnionFind UF(5, 10);
 
-    for(int g = 0; g < 5; ++g)
+    for(int g = 1; g < 5; ++g)
     {
-        UF.findGroup(g).getPlayers()->get()->getSize();
+        UF.findGroup(g).getPlayerCount();
     }
 
-    for(int g = 0; g < 5; ++g)
+    for(int g = 1; g < 5; ++g)
     {
-        cout << "g" << g << ": " << UF.findGroup(g).getPlayers()->get()->getSize();
+        int pc = UF.findGroup(g).getPlayerCount();
+        cout << "g" << g << ": " << pc << std::endl;
+        cout << "test #" << g << ": "
+            << (pc == UF.findGroup(g).getPlayers()[0]->getSize() && pc == UF.findGroup(g).getPlayerCount())
+            << std::endl;
     }
 
     return 0;

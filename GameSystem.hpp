@@ -22,9 +22,9 @@ class GameSystem
         void removePlayer(int playerId);
         void increasePlayerIDLevel(int playerId, int levelIncrease);
         void changePlayerIDScore(int playerId, int newScore);
-        void getPercentOfPlayersWithScoreInBounds(int groupId, int score, int lowerLevel, int higherLevel, double* players);
-        void averageHighestPlayerLevelByGroup(int groupId, int m, double* avgLevel);
-        void getPlayersBound(int groupId, int score, int m, int* lowerBoundPlayers, int* higherBoundPlayers);
+        double getPercentOfPlayersWithScoreInBounds(int groupId, int score, int lowerLevel, int higherLevel);
+        double averageHighestPlayerLevelByGroup(int groupId, int m);
+        void getPlayersBound(int groupId, int score, int m, int* lowerBoundPlayers, int* higherBoundPlayers) const;
 
 
 

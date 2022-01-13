@@ -68,32 +68,36 @@ void GameSystem::changePlayerIDScore(int playerId, int newScore)
     addPlayer(p.getPlayerId(), p.getGroupId(), newScore);
 }
 
-void GameSystem::getPercentOfPlayersWithScoreInBounds(int groupId, int score, int lowerLevel, int higherLevel,
-                                                      double *players)
+double GameSystem::getPercentOfPlayersWithScoreInBounds(int groupId, int score, int lowerLevel, int higherLevel)
 {
-    if (groupId < 0 || groupId > k || players == nullptr)
+    if (groupId < 0 || groupId > k) //TODO: ensure the library2.cpp version of this checks for nullptr.
     {
         throw InvalidInput("Invalid input to getPercentOfPlayersWithScoreInBounds.");
     }
 
     const Group& group = groupId > 0 ? groups.findGroup(groupId) : players_by_level;
-
-    //TODO: implement
+    return (double)group.countPlayersWithScoreInRange(lowerLevel, higherLevel, score)
+        / (double)group.countPlayersInRange(lowerLevel, higherLevel);
 }
 
-void GameSystem::averageHighestPlayerLevelByGroup(int groupId, int m, double *avgLevel)
+double GameSystem::averageHighestPlayerLevelByGroup(int groupId, int m)
 {
-    if (groupId < 0 || groupId > k || m <= 0 || avgLevel == nullptr)
+    if (groupId < 0 || groupId > k || m <= 0)
     {
-        throw InvalidInput("Invalid input to getPercentOfPlayersWithScoreInBounds.");
+        throw InvalidInput("Invalid input to averageHighestPlayerLevelByGroup.");
     }
 
-    const Group& group = groupId > 0 ? groups.findGroup(groupId) : players_by_level;
+    Group& group = groupId > 0 ? groups.findGroup(groupId) : players_by_level;
+    if (m > group.getPlayerCount())
+    {
+        throw Failure("m > player count in averageHighestPlayerLevelByGroup.");
+    }
 
     //TODO: implement, AND THROW FAILURE if 0 characters in range.
+    return (double)group.sumLevelOfTopM(m) / m;
 }
 
-void GameSystem::getPlayersBound(int groupId, int score, int m, int *lowerBoundPlayers, int *higherBoundPlayers)
+void GameSystem::getPlayersBound(int groupId, int score, int m, int *lowerBoundPlayers, int *higherBoundPlayers) const
 {
     if (groupId < 0 || groupId > k || score <= 0 || score > scale || m < 0
         || lowerBoundPlayers == nullptr || higherBoundPlayers == nullptr) //TODO: ensure m < 0 is right here. In the prev it was <=

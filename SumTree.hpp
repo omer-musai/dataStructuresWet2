@@ -43,7 +43,7 @@ private:
                 }
             }
 
-            void operator()(int& value, int height, int parentValue, int leftValue, int rightValue, int BF) {
+            void operator()(int value, int height, int parentValue, int leftValue, int rightValue, int BF) {
                 if (reverse)
                 {
                     if(size < 0 || index >= 0)
@@ -106,10 +106,10 @@ private:
         };
 
         //This uses the algorithm described & proved in the doc.
-        static std::shared_ptr<SumTree> AVLFromArray(int** arr, int size, bool clone=true) {
+        static std::unique_ptr<SumTree> AVLFromArray(int** arr, int size, bool clone=true) {
             assert(size >= 0);
 
-            std::shared_ptr<SumTree> tree = std::shared_ptr<SumTree>(new SumTree());
+            std::unique_ptr<SumTree> tree = std::unique_ptr<SumTree>(new SumTree());
             if (size > 0)
             {
                 int m = (size % 2 == 0 ? size / 2 : (size + 1) / 2) - 1; //m=ceil(size/2)-1
@@ -127,10 +127,10 @@ private:
         }
 
         //THIS RUINS THE PARAMETER TREES. Careful!
-        static std::shared_ptr<SumTree> mergeTrees(SumTree& t1, SumTree& t2, bool clone=true) {
+        static std::unique_ptr<SumTree> mergeTrees(SumTree& t1, SumTree& t2, bool clone=true) {
             int **t1arr = nullptr, **t2arr = nullptr, **merged = nullptr;
             int totalSize = t1.getSize() + t2.getSize();
-            std::shared_ptr<SumTree> result;
+            std::unique_ptr<SumTree> result;
             try {
                 t1arr = treeToArray(t1);
                 t2arr = treeToArray(t2);
@@ -225,6 +225,87 @@ private:
         }
 
         return findLocationAux(level, nextNode, orderRel);
+    }
+
+    /*
+     * Like findLocation, but returns the next node in order and the prev node in order IF the node
+     * was not found (this is done via the before and after parameters).
+     * If the node was found, the return value AS WELL AS BEFORE & AFTER will point to it.
+     * If the node was not found, the return value will nullptr, and before & after will point to the
+     * next & prev in order.
+     *
+     * Before and after can be provided as nullptr, in which case they will be ignored.
+     * (Hence, having both of them as nullptr effectively mimics findLocation in all respects.)
+     */
+    SumTreeNode* findLocationBounds(int level, Order &orderRel, SumTreeNode** before=nullptr, SumTreeNode** after=nullptr) const
+    {
+        if (root == nullptr) return nullptr;
+        return findLocationBoundsAux(level, root, orderRel, before, after);
+    }
+
+    SumTreeNode* findLocationBoundsAux(int level, SumTreeNode* curr, Order &orderRel, SumTreeNode** before, SumTreeNode** after) const
+    {
+        if (level == curr->getLevel())
+        {
+            orderRel = equal;
+            *before = *after = curr;
+            return curr;
+        }
+
+        bool isLarger = level > curr->getLevel();
+        SumTreeNode* nextNode;
+
+        if (isLarger)
+        {
+            nextNode = curr->getRight();
+            if (before != nullptr) *before = curr;
+        }
+        else
+        {
+            nextNode = curr->getLeft();
+            if (after != nullptr) *after = curr;
+        }
+
+        if (nextNode == nullptr)
+        {
+            orderRel = isLarger ? larger : smaller;
+            return curr;
+        }
+
+        return findLocationBoundsAux(level, nextNode, orderRel, before, after);
+    }
+
+    /*
+     * The lowerThan described in the LyX document under getPercentOfPlayersWithScoreInBounds.
+     * It'd be more efficient to merge this with findLocationBounds, but asymptotically it wouldn't
+     * matter and we're a bit short on time.
+     * NOTE: THIS SHOULD ONLY BE CALLED ON NODES THAT ARE CONFIRMED TO BE IN THE TREE.
+     * (That's while it takes a node despite only needing a level.)
+     */
+    int lowerThan(const SumTreeNode& node) const
+    {
+        int level = node.getLevel();
+        int r = 0;
+        SumTreeNode* curr = root;
+        while (curr != nullptr)
+        {
+            if (level == curr->getLevel())
+            {
+                return r + curr->getLeftW();
+            }
+            if (level > curr->getLevel())
+            {
+                r += curr->getLeftW() + curr->getInThisLevel();
+                curr = curr->getRight();
+            }
+            else
+            {
+                curr = curr->getLeft();
+            }
+        }
+
+        assert(false); //shouldn't get here
+        return -1;
     }
 
     /*template <class K>
@@ -732,10 +813,10 @@ public:
         ++nodeCount;
     }
 
-    const int& getHighest() const
+    /*int getHighest() const
     {
         return highest->getLevel();
-    }
+    }*/
 
     template <class A>
     void inorder(A& action) const
@@ -771,7 +852,7 @@ public:
         return found;
     }*/
 
-    static std::shared_ptr<SumTree> treeFromArray(int** arr, int size, bool clone=true)
+    static std::unique_ptr<SumTree> treeFromArray(int** arr, int size, bool clone=true)
     {
         return StaticAVLUtilities::AVLFromArray(arr, size, clone);
     }
@@ -784,9 +865,59 @@ public:
     /*
      * THIS RUINS THE PARAMETER TREES! CAREFUL!
      */
-    static std::shared_ptr<SumTree> mergeTrees(SumTree& t1, SumTree& t2)
+    static SumTree* mergeTrees(SumTree& t1, SumTree& t2)
     {
-        return StaticAVLUtilities::mergeTrees(t1, t2);
+        return StaticAVLUtilities::mergeTrees(t1, t2).release();
+    }
+
+    int countInRange(int lowerRange, int higherRange) const
+    {
+        SumTreeNode *bottom, *top;
+        Order orderRel;
+        findLocationBounds(higherRange, orderRel, nullptr, &top);
+        if (lowerRange > 0)
+        {
+            findLocationBounds(lowerRange, orderRel, &bottom, nullptr);
+            return lowerThan(*top) + top->getInThisLevel() - lowerThan(*bottom);
+        }
+        return lowerThan(*top) + top->getInThisLevel() + getLevelZero();
+    }
+
+    //This should only be called if m <= player count.
+    int sumLevelOfTopM(int m) const
+    {
+        if (m > getSize())
+        {
+            throw Failure("sumLevelOfTopM: illegal m.");
+        }
+        int leftToSum = m, sum = 0;
+        SumTreeNode* curr = root;
+        assert(curr != nullptr);
+
+        while (leftToSum > 0)
+        {
+            if (curr->getRightW() >= m)
+            {
+                curr = curr->getRight();
+            }
+            else
+            {
+                sum += curr->getRightTotalLevel();
+                leftToSum -= curr->getRightW();
+                if (leftToSum <= curr->getInThisLevel())
+                {
+                    return sum + leftToSum * curr->getLevel();
+                }
+                else
+                {
+                    sum += curr->getInThisLevel() * curr->getLevel();
+                    curr = curr->getLeft();
+                }
+            }
+        }
+
+        throw Failure("Got to a weird place in sumTopM thingy in SumTree.");
+        return -1;
     }
 
     void clean()

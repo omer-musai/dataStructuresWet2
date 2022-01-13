@@ -8,9 +8,9 @@
 class GroupsUnionFind
 {
     private:
-        std::shared_ptr<Group> sets;
-        std::shared_ptr<int> sizes;
-        std::shared_ptr<int> parents;
+        Group* sets;
+        int* sizes;
+        int* parents;
         int k;
         int scale;
 
@@ -20,9 +20,14 @@ class GroupsUnionFind
 
     public:
         GroupsUnionFind(int k, int scale);
-       
+
+        GroupsUnionFind& operator=(const GroupsUnionFind& other) = delete;
+        GroupsUnionFind(const GroupsUnionFind& other) = delete;
+
         Group& findGroup(int id);
 
         Group& uniteGroups(int id1, int id2);
+
+        ~GroupsUnionFind();
 };
 #endif //UNION_FIND_H

@@ -87,7 +87,7 @@ public:
         return height;
     }
 
-    int& getLevel() //TODO: consdier making this const (check if this is bad, RE: SumTree->addNode).
+    int getLevel() const //TODO: consdier making this const (check if this is bad, RE: SumTree->addNode).
     {
         return level;
     }
