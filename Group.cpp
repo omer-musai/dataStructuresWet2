@@ -82,8 +82,11 @@ void Group::mergeGroups(Group &g)
 
     for (int i = 0; i < scale + 1; i++)
     {
+        SumTree *toFree1 = trees_array[i], *toFree2 = g.trees_array[i];
         trees_array[i]
                 = SumTree::mergeTrees(*trees_array[i], *g.trees_array[i]);
+        delete toFree1;
+        delete toFree2;
     }
 }
 
