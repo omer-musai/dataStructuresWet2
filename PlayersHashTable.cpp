@@ -19,7 +19,7 @@ void PlayersHashTable::replaceTable(Node** newTable, int oldLength)
             delete toFree;
         }
     }
-    delete this->table;
+    delete[] this->table;
     this->table = newTable;
 }
 

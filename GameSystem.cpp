@@ -75,9 +75,21 @@ double GameSystem::getPercentOfPlayersWithScoreInBounds(int groupId, int score, 
         throw InvalidInput("Invalid input to getPercentOfPlayersWithScoreInBounds.");
     }
 
+    if (lowerLevel > higherLevel || score > scale)
+    {
+        return 0;
+    }
+
     const Group& group = groupId > 0 ? groups.findGroup(groupId) : players_by_level;
+
+    double playersInRange = group.countPlayersInRange(lowerLevel, higherLevel);
+    if (playersInRange == 0)
+    {
+        return 0;
+    }
+
     return (double)group.countPlayersWithScoreInRange(lowerLevel, higherLevel, score)
-        / (double)group.countPlayersInRange(lowerLevel, higherLevel);
+        / playersInRange;
 }
 
 double GameSystem::averageHighestPlayerLevelByGroup(int groupId, int m)

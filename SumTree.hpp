@@ -239,7 +239,12 @@ private:
      */
     SumTreeNode* findLocationBounds(int level, Order &orderRel, SumTreeNode** before=nullptr, SumTreeNode** after=nullptr) const
     {
-        if (root == nullptr) return nullptr;
+        if (root == nullptr)
+        {
+            if (before != nullptr) *before = nullptr;
+            if (after != nullptr) *after = nullptr;
+            return nullptr;
+        }
         return findLocationBoundsAux(level, root, orderRel, before, after);
     }
 
@@ -282,9 +287,13 @@ private:
      * NOTE: THIS SHOULD ONLY BE CALLED ON NODES THAT ARE CONFIRMED TO BE IN THE TREE.
      * (That's while it takes a node despite only needing a level.)
      */
-    int lowerThan(const SumTreeNode& node) const
+    int lowerThan(const SumTreeNode* node) const
     {
-        int level = node.getLevel();
+        if (node == nullptr)
+        {
+            return root == nullptr ? 0 : root->getW();
+        }
+        int level = node->getLevel();
         int r = 0;
         SumTreeNode* curr = root;
         while (curr != nullptr)
@@ -876,12 +885,13 @@ public:
         SumTreeNode *bottom, *top;
         Order orderRel;
         findLocationBounds(higherRange, orderRel, nullptr, &top);
+        int inTopLevel = top == nullptr ? 0 : top->getInThisLevel();
         if (lowerRange > 0)
         {
             findLocationBounds(lowerRange, orderRel, &bottom, nullptr);
-            return lowerThan(*top) + top->getInThisLevel() - lowerThan(*bottom);
+            return lowerThan(top) + inTopLevel - lowerThan(bottom);
         }
-        return lowerThan(*top) + top->getInThisLevel() + getLevelZero();
+        return lowerThan(top) + inTopLevel + getLevelZero();
     }
 
     //This should only be called if m <= player count.

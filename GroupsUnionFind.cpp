@@ -11,17 +11,18 @@ int GroupsUnionFind::findGroupId(int id)
         throw InvalidInput("Invalid group ID passed to findGroup.");
     }
 
-    //Using id-1 because the array has an offset.
-    int root, curr = id - 1, next;
+    //Will have to deduct 1 on access because the array has an offset.
+    int root, curr = id, next;
 
     root = findRoot(id);
 
     //Path compression:
     if (root != curr)
     {
-        while (parents[curr] != root) {
-            next = parents[curr] - 1;
-            parents[curr] = root;
+        while (parents[curr - 1] != root) {
+            next = parents[curr - 1];
+            parents[curr - 1] = root;
+            assert(curr != root);
             curr = next;
         }
     }
@@ -31,8 +32,8 @@ int GroupsUnionFind::findGroupId(int id)
 
 int GroupsUnionFind::findRoot(int groupId)
 {
-    int root = groupId - 1;
-    while(parents[root] != 0)
+    int root = groupId;
+    while(parents[root - 1] != 0)
     {
         root = parents[root - 1];
     }
@@ -41,7 +42,7 @@ int GroupsUnionFind::findRoot(int groupId)
 
 Group& GroupsUnionFind::findGroup(int id)
 {
-    return sets[findGroupId(id)];
+    return sets[findGroupId(id) - 1];
 }
 
 
@@ -49,14 +50,18 @@ Group& GroupsUnionFind::uniteGroups(int id1, int id2)
 {
     id1 = findGroupId(id1); //Getting the actual group ID (i.e the root of the union).
     id2 = findGroupId(id2);
+    if (id1 == id2)
+    {
+        throw Failure ("Tried to merge groups that were already merged.");
+    }
     int from = id1 <= id2 ? id1 : id2,
             to = id1 <= id2 ? id2 : id1;
 
-    parents[from] = to;
+    parents[from - 1] = to;
 
-    sets[to].mergeGroups(sets[from]);
+    sets[to - 1].mergeGroups(sets[from - 1]);
 
-    return sets[to];
+    return sets[to - 1];
 }
 
 GroupsUnionFind::GroupsUnionFind(int k, int scale) : sets(new Group[k]), sizes(new int[k]), parents(new int[k]), k(k), scale(scale)
