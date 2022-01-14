@@ -77,7 +77,7 @@ private:
 
     Node* findNode(int playerId) const;
 public:
-    PlayersHashTable() : tableLength(defaultStartingLength), playerCount(0), table(new Node*[tableLength])
+    PlayersHashTable() : tableLength(defaultStartingLength), playerCount(0), table(new Node*[tableLength]())
     {}
     PlayersHashTable(const PlayersHashTable& other) = delete;
     PlayersHashTable& operator=(const PlayersHashTable& other) = delete;

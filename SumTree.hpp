@@ -795,6 +795,7 @@ public:
             {
                 location->increaseInThisLevel();
                 delete newNode;
+                newNode = location;
             }
             else
             {

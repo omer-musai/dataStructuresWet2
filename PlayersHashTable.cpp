@@ -141,5 +141,5 @@ PlayersHashTable::~PlayersHashTable()
         }
     }
 
-    delete table;
+    delete[] table;
 }

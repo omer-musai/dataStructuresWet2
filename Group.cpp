@@ -18,6 +18,7 @@ void Group::init(int scale)
     {
         throw Failure("Tried to initialize Group object twice.");
     }
+    this->scale = scale;
     int cnt = -1;
     try
     {
