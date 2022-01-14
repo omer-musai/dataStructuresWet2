@@ -101,10 +101,7 @@ StatusType GetPlayersBound(void *DS, int GroupID, int score, int m,
     return FAILURE; //Not implemented.
 }
 
-void Quit(void** DS);
-
-#ifdef __cplusplus
+void Quit(void** DS)
+{
+    delete ((GameSystem*)*DS);
 }
-#endif
-
-#endif    /*_234218_WET2 */
