@@ -87,6 +87,7 @@ void Group::mergeGroups(Group &g)
                 = SumTree::mergeTrees(*trees_array[i], *g.trees_array[i]);
         delete toFree1;
         delete toFree2;
+        g.trees_array[i] = nullptr; //The dtor will still go over that one. Don't wanna double free.
     }
 }
 

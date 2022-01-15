@@ -25,9 +25,6 @@ class GameSystem
         double getPercentOfPlayersWithScoreInBounds(int groupId, int score, int lowerLevel, int higherLevel);
         double averageHighestPlayerLevelByGroup(int groupId, int m);
         void getPlayersBound(int groupId, int score, int m, int* lowerBoundPlayers, int* higherBoundPlayers) const;
-
-
-
 };
 
 #endif //GAME_SYSTEM_H
