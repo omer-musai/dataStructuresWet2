@@ -23,14 +23,14 @@ private:
         friend class SumTree;
         class ArrayFromTreePopulator {
         private:
-            int** array;
+            int* array;
             int size;
             int index;
             bool reverse;
 
         public:
             ArrayFromTreePopulator() = delete;
-            explicit ArrayFromTreePopulator(int** array, int size = -1, bool reverse=false):
+            explicit ArrayFromTreePopulator(int* array, int size = -1, bool reverse=false):
                     array(array), size(size), index(0), reverse(reverse)
             {
                 if (reverse)
@@ -48,21 +48,21 @@ private:
                 {
                     if(size < 0 || index >= 0)
                     {
-                        array[index--] = &value;
+                        array[index--] = value;
                     }
                 }
                 else
                 {
                     if (size < 0 || index < size)
                     {
-                        array[index++] = &value;
+                        array[index++] = value;
                     }
                 }
             }
         };
 
-        static int** treeToArray(const SumTree& tree, bool reverse=false) {
-            int** array = new int*[tree.getSize()];
+        static int* treeToArray(const SumTree& tree, bool reverse=false) {
+            int* array = new int[tree.getSize()];
             try
             {
                 ArrayFromTreePopulator populator(array, tree.getSize(), reverse);
@@ -76,13 +76,13 @@ private:
             return array;
         }
 
-        static int** arrayMerge(int** arr1, int size1, int** arr2, int size2) {
-            int** array = new int*[size1 + size2];
+        static int* arrayMerge(int* arr1, int size1, int* arr2, int size2) {
+            int* array = new int[size1 + size2];
             try
             {
                 int i1 = 0, i2 = 0, i = 0;
                 while (i1 < size1 && i2 < size2) {
-                    array[i] = (*arr1[i1]) < (*arr2[i2]) ? arr1[i1] : arr2[i2];
+                    array[i] = arr1[i1] < arr2[i2] ? arr1[i1] : arr2[i2];
                     if (array[i] == arr1[i1]) {
                         ++i1;
                     } else {
@@ -106,20 +106,20 @@ private:
         };
 
         //This uses the algorithm described & proved in the doc.
-        static std::unique_ptr<SumTree> AVLFromArray(int** arr, int size, bool clone=true) {
+        static std::unique_ptr<SumTree> AVLFromArray(int* arr, int size) {
             assert(size >= 0);
 
             std::unique_ptr<SumTree> tree = std::unique_ptr<SumTree>(new SumTree());
             if (size > 0)
             {
                 int m = (size % 2 == 0 ? size / 2 : (size + 1) / 2) - 1; //m=ceil(size/2)-1
-                tree->addNode(*arr[m]); //O(1) since the tree is empty.
+                tree->addNode(arr[m]); //O(1) since the tree is empty.
 
                 if (size == 2) {
-                    tree->addNode(*arr[m + 1]); //O(1) since the tree is always sized 1 and this point.
+                    tree->addNode(arr[m + 1]); //O(1) since the tree is always sized 1 and this point.
                 } else if (size > 2) {
-                    tree->setLeftSubtree(AVLFromArray(arr, m, clone));
-                    tree->setRightSubtree(AVLFromArray(arr + (m + 1), size - m - 1, clone));
+                    tree->setLeftSubtree(AVLFromArray(arr, m));
+                    tree->setRightSubtree(AVLFromArray(arr + (m + 1), size - m - 1));
                 }
             }
 
@@ -128,7 +128,7 @@ private:
 
         //THIS RUINS THE PARAMETER TREES. Careful!
         static std::unique_ptr<SumTree> mergeTrees(SumTree& t1, SumTree& t2, bool clone=true) {
-            int **t1arr = nullptr, **t2arr = nullptr, **merged = nullptr;
+            int *t1arr = nullptr, *t2arr = nullptr, *merged = nullptr;
             int totalSize = t1.getSize() + t2.getSize();
             int levelZero = t1.levelZero + t2.levelZero;
             std::unique_ptr<SumTree> result;
@@ -136,7 +136,7 @@ private:
                 t1arr = treeToArray(t1);
                 t2arr = treeToArray(t2);
                 merged = arrayMerge(t1arr, t1.getSize(), t2arr, t2.getSize());
-                result = treeFromArray(merged, totalSize, clone);
+                result = treeFromArray(merged, totalSize);
                 result->levelZero = levelZero;
                 t1.clean();
                 t2.clean();
@@ -780,9 +780,18 @@ public:
             //Node isn't in the tree.
             throw Failure("Tried to remove non-existent node.");
         }
-        removeNode_updateHighestAux(node);
-        SumTreeNode* nodeToFix = removeNodeAux(node);
-        --nodeCount;
+        node->decreaseInThisLevel();
+        SumTreeNode* nodeToFix;
+        if (node->getInThisLevel() == 0)
+        {
+            removeNode_updateHighestAux(node);
+            nodeToFix = removeNodeAux(node);
+            --nodeCount;
+        }
+        else
+        {
+            nodeToFix = node->getParent();
+        }
 
         updateTree(nodeToFix);
     }
@@ -805,6 +814,7 @@ public:
         if (root == nullptr)
         {
             root = highest = newNode;
+            ++nodeCount;
         }
         else
         {
@@ -819,6 +829,7 @@ public:
             else
             {
                 addNodeToLocation(location, newNode, orderRel);
+                ++nodeCount;
             }
 
             updateTree(newNode);
@@ -829,8 +840,6 @@ public:
                 highest = newNode;
             }
         }
-
-        ++nodeCount;
     }
 
     /*int getHighest() const
@@ -878,12 +887,12 @@ public:
         return found;
     }*/
 
-    static std::unique_ptr<SumTree> treeFromArray(int** arr, int size, bool clone=true)
+    static std::unique_ptr<SumTree> treeFromArray(int* arr, int size)
     {
-        return StaticAVLUtilities::AVLFromArray(arr, size, clone);
+        return StaticAVLUtilities::AVLFromArray(arr, size);
     }
 
-    static int** treeToArray(const SumTree& tree, bool reverse=false)
+    static int* treeToArray(const SumTree& tree, bool reverse=false)
     {
         return StaticAVLUtilities::treeToArray(tree, reverse);
     }

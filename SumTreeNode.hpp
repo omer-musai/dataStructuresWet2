@@ -44,6 +44,13 @@ public:
         ++(this->w);
     }
 
+    void decreaseInThisLevel()
+    {
+        --(this->inThisLevel);
+        --(this->totalLevel);
+        --(this->w);
+    }
+
     void setRight(SumTreeNode* newRight)
     {
         this->right = newRight;
