@@ -41,7 +41,7 @@ typedef enum {
     QUIT_CMD = 9
 } commandType;
 
-static const int numActions = 9;
+static const int numActions = 10;
 static const char *commandStr[] = {
         "Init",
         "MergeGroups",

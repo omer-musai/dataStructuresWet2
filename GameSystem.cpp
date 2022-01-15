@@ -88,8 +88,8 @@ double GameSystem::getPercentOfPlayersWithScoreInBounds(int groupId, int score, 
         return 0;
     }
 
-    return (double)group.countPlayersWithScoreInRange(lowerLevel, higherLevel, score)
-        / playersInRange;
+    return ((double)group.countPlayersWithScoreInRange(lowerLevel, higherLevel, score)
+        / playersInRange) * 100;
 }
 
 double GameSystem::averageHighestPlayerLevelByGroup(int groupId, int m)

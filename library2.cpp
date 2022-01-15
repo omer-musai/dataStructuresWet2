@@ -104,4 +104,5 @@ StatusType GetPlayersBound(void *DS, int GroupID, int score, int m,
 void Quit(void** DS)
 {
     delete ((GameSystem*)*DS);
+    *DS = nullptr;
 }
