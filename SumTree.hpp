@@ -932,7 +932,7 @@ public:
 
         while (leftToSum > 0)
         {
-            if (curr->getRightW() >= m)
+            if (curr->getRightW() >= leftToSum)
             {
                 curr = curr->getRight();
             }
@@ -947,6 +947,7 @@ public:
                 else
                 {
                     sum += curr->getInThisLevel() * curr->getLevel();
+                    leftToSum -= curr->getInThisLevel();
                     curr = curr->getLeft();
                 }
             }
