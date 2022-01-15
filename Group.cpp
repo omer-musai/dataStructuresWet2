@@ -60,7 +60,7 @@ void Group::removePlayer(const Player &player)
     }
 
     trees_array[0]->removeNode(player.getLevel()); //All players tree.
-    trees_array[player.getScore()]->addNode(player.getLevel()); //Score-based tree.
+    trees_array[player.getScore()]->removeNode(player.getLevel()); //Score-based tree.
     --playerCount;
 }
 

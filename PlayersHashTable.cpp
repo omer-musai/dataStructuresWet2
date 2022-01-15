@@ -71,6 +71,26 @@ void PlayersHashTable::insertNode(Node* node, Node** table)
     table[hashed] = node;
 }
 
+void PlayersHashTable::removeNode(Node* node)
+{
+    int hashed = hash(node->getId());
+    if (table[hashed] == node)
+    {
+        table[hashed] = node->getNext();
+    }
+    else
+    {
+        Node* curr = table[hashed];
+        while (curr->getNext() != node)
+        {
+            curr = curr->getNext();
+            assert(curr != nullptr);
+        }
+        curr->setNext(node->getNext());
+    }
+    delete node;
+}
+
 void PlayersHashTable::insert(const Player& player)
 {
     Node* node = findNode(player.getPlayerId());
@@ -93,7 +113,7 @@ void PlayersHashTable::remove(int playerId)
         throw Failure("Tried to remove non-existent player.");
     }
 
-    //TODO: remove
+    removeNode(node);
     --playerCount;
 
     rehash(); //Contracts if needed.

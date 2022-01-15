@@ -75,6 +75,8 @@ private:
     //Auxiliary function for insert and replaceTable.
     void insertNode(Node* node, Node** table=nullptr);
 
+    void removeNode(Node* node);
+
     Node* findNode(int playerId) const;
 public:
     PlayersHashTable() : tableLength(defaultStartingLength), playerCount(0), table(new Node*[tableLength]())

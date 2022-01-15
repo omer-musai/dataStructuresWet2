@@ -130,12 +130,14 @@ private:
         static std::unique_ptr<SumTree> mergeTrees(SumTree& t1, SumTree& t2, bool clone=true) {
             int **t1arr = nullptr, **t2arr = nullptr, **merged = nullptr;
             int totalSize = t1.getSize() + t2.getSize();
+            int levelZero = t1.levelZero + t2.levelZero;
             std::unique_ptr<SumTree> result;
             try {
                 t1arr = treeToArray(t1);
                 t2arr = treeToArray(t2);
                 merged = arrayMerge(t1arr, t1.getSize(), t2arr, t2.getSize());
                 result = treeFromArray(merged, totalSize, clone);
+                result->levelZero = levelZero;
                 t1.clean();
                 t2.clean();
             }
@@ -239,10 +241,10 @@ private:
      */
     SumTreeNode* findLocationBounds(int level, Order &orderRel, SumTreeNode** before=nullptr, SumTreeNode** after=nullptr) const
     {
+        if (before != nullptr) *before = nullptr;
+        if (after != nullptr) *after = nullptr;
         if (root == nullptr)
         {
-            if (before != nullptr) *before = nullptr;
-            if (after != nullptr) *after = nullptr;
             return nullptr;
         }
         return findLocationBoundsAux(level, root, orderRel, before, after);
@@ -253,7 +255,14 @@ private:
         if (level == curr->getLevel())
         {
             orderRel = equal;
-            *before = *after = curr;
+            if (after != nullptr)
+            {
+                *after = curr;
+            }
+            if (before != nullptr)
+            {
+                *before = curr;
+            }
             return curr;
         }
 
@@ -284,6 +293,7 @@ private:
      * The lowerThan described in the LyX document under getPercentOfPlayersWithScoreInBounds.
      * It'd be more efficient to merge this with findLocationBounds, but asymptotically it wouldn't
      * matter and we're a bit short on time.
+     * If node == nullptr, return all players in tree except level zeroes.
      * NOTE: THIS SHOULD ONLY BE CALLED ON NODES THAT ARE CONFIRMED TO BE IN THE TREE.
      * (That's while it takes a node despite only needing a level.)
      */
@@ -834,9 +844,15 @@ public:
         inorderAux(action, root);
     }
 
+    //WITHOUT LEVELZERO.
     int getSize() const
     {
         return this->nodeCount;
+    }
+
+    int getPlayerCount() const
+    {
+        return levelZero + (root == nullptr ? 0 : root->getW());
     }
 
     /*
@@ -889,7 +905,7 @@ public:
         if (lowerRange > 0)
         {
             findLocationBounds(lowerRange, orderRel, &bottom, nullptr);
-            return lowerThan(top) + inTopLevel - lowerThan(bottom);
+            return lowerThan(top) + inTopLevel - (bottom == nullptr ? 0 : lowerThan(bottom));
         }
         return lowerThan(top) + inTopLevel + getLevelZero();
     }
@@ -897,13 +913,22 @@ public:
     //This should only be called if m <= player count.
     int sumLevelOfTopM(int m) const
     {
-        if (m > getSize())
+        if (m > getPlayerCount())
         {
             throw Failure("sumLevelOfTopM: illegal m.");
         }
+        if (root == nullptr)
+        {
+            return 0; //They're all level 0.
+        }
+
         int leftToSum = m, sum = 0;
         SumTreeNode* curr = root;
-        assert(curr != nullptr);
+
+        if (leftToSum > root->getW())
+        {
+            leftToSum = root->getW(); //Take minimum amount from levelZeros.
+        }
 
         while (leftToSum > 0)
         {
