@@ -146,6 +146,7 @@ const Player& PlayersHashTable::search(int playerId) const
 
 bool PlayersHashTable::isMember(int playerId) const
 {
+    assert(playerCount == countDebug());
     return findNode(playerId) != nullptr;
 }
 

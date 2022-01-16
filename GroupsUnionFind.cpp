@@ -64,6 +64,16 @@ Group& GroupsUnionFind::uniteGroups(int id1, int id2)
 
     sets[to - 1].mergeGroups(sets[from - 1]);
 
+    //TODO: remove
+    if (findGroupId(id1) == findGroupId(7))
+    {
+        int x = 3;
+    }
+    else if (id1 == 78 && id2 == 63)
+    {
+        int x = 3;
+    }
+
     return sets[to - 1];
 }
 

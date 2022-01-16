@@ -20,8 +20,12 @@ private:
 	int height;
 
 public:
-    explicit SumTreeNode(int level) : level(level), inThisLevel(1), totalLevel(level), w(1), left(nullptr), right(nullptr), parent(nullptr), height(0)
-    {}
+    explicit SumTreeNode(int level, int inThisLevel = 1)
+        :   level(level), inThisLevel(inThisLevel), totalLevel(level),
+            w(1), left(nullptr), right(nullptr), parent(nullptr), height(0)
+    {
+        updateHeight();
+    }
 
     SumTreeNode& operator=(SumTreeNode& other) = delete;
 

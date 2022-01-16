@@ -2,6 +2,10 @@
 
 void GameSystem::mergeGroups(int id1, int id2)
 {
+    if (id1 == 1 && id2 == 14)
+    {
+        int x = 3; //todo remove
+    }
     players_by_level.assertDebug();
     if (id1 <= 0 || id2 <= 0)
     {
@@ -19,6 +23,10 @@ void GameSystem::mergeGroups(int id1, int id2)
 
 void GameSystem::addPlayer(int playerId, int groupId, int score)
 {
+    if (playerId == 684052856)
+    {
+        int x = 3; //todo remove
+    }
     players_by_level.assertDebug();
     Player p(playerId, groupId, score);
     addPlayer(p);
@@ -55,6 +63,10 @@ void GameSystem::removePlayer(int playerId)
 
 void GameSystem::increasePlayerIDLevel(int playerId, int levelIncrease)
 {
+    if (playerId == 684052856)
+    {
+        int x = 3; //todo remove
+    }
     players_by_level.assertDebug();
     if (playerId <= 0 || levelIncrease <= 0)
     {
@@ -69,6 +81,10 @@ void GameSystem::increasePlayerIDLevel(int playerId, int levelIncrease)
 
 void GameSystem::changePlayerIDScore(int playerId, int newScore)
 {
+    if (playerId == 787470600 && newScore == 41)
+    {
+        int x = 3;
+    }
     players_by_level.assertDebug();
     if (playerId <= 0 || newScore <= 0 || newScore > scale)
     {
@@ -108,10 +124,6 @@ double GameSystem::getPercentOfPlayersWithScoreInBounds(int groupId, int score, 
 
 double GameSystem::averageHighestPlayerLevelByGroup(int groupId, int m)
 {
-    if (groupId == 51 && m == 7)
-    {
-        int x = 3; //TODO: remove
-    }
     players_by_level.assertDebug();
     if (groupId < 0 || groupId > k || m <= 0)
     {

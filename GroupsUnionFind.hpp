@@ -19,6 +19,10 @@ class GroupsUnionFind
         int findRoot(int groupId);
 
     public:
+        int debug(int id)
+        {
+            return findGroupId(id); //TODO: remove
+        }
         GroupsUnionFind(int k, int scale);
 
         GroupsUnionFind& operator=(const GroupsUnionFind& other) = delete;

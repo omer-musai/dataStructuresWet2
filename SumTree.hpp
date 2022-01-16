@@ -24,14 +24,15 @@ private:
         class ArrayFromTreePopulator {
         private:
             int* array;
+            int* levels;
             int size;
             int index;
             bool reverse;
 
         public:
             ArrayFromTreePopulator() = delete;
-            explicit ArrayFromTreePopulator(int* array, int size = -1, bool reverse=false):
-                    array(array), size(size), index(0), reverse(reverse)
+            explicit ArrayFromTreePopulator(int* array, int* levels, int size = -1, bool reverse=false):
+                    array(array), levels(levels), size(size), index(0), reverse(reverse)
             {
                 if (reverse)
                 {
@@ -43,83 +44,105 @@ private:
                 }
             }
 
-            void operator()(int value, int height, int parentValue, int leftValue, int rightValue, int BF) {
+            void operator()(int level, int inThisLevel, int height, int parentValue, int leftValue, int rightValue, int BF) {
                 if (reverse)
                 {
                     if(size < 0 || index >= 0)
                     {
-                        array[index--] = value;
+                        array[index] = level;
+                        levels[index--] = inThisLevel;
                     }
                 }
                 else
                 {
                     if (size < 0 || index < size)
                     {
-                        array[index++] = value;
+                        array[index] = level;
+                        levels[index++] = inThisLevel;
                     }
                 }
             }
         };
 
-        static int* treeToArray(const SumTree& tree, bool reverse=false) {
+        static int* treeToArray(const SumTree& tree, int** levels, bool reverse=false) {
             int* array = new int[tree.getSize()];
+            *levels = new int[tree.getSize()];
             try
             {
-                ArrayFromTreePopulator populator(array, tree.getSize(), reverse);
+                ArrayFromTreePopulator populator(array, *levels, tree.getSize(), reverse);
                 tree.inorder(populator);
             }
             catch (std::exception& exception)
             {
                 delete[] array;
+                delete[] *levels;
                 throw exception;
             }
             return array;
         }
 
-        static int* arrayMerge(int* arr1, int size1, int* arr2, int size2) {
+        static int* arrayMerge(int* arr1, int* levels1, int size1, int* arr2, int* levels2, int size2, int **levelsMerged, int *length) {
+            assert(levelsMerged != nullptr && length != nullptr);
             int* array = new int[size1 + size2];
+            *levelsMerged = new int[size1 + size2]; //Might take more space than needed. Could realloc in the end if it matters.
             try
             {
                 int i1 = 0, i2 = 0, i = 0;
                 while (i1 < size1 && i2 < size2) {
-                    array[i] = arr1[i1] < arr2[i2] ? arr1[i1] : arr2[i2];
-                    if (array[i] == arr1[i1]) {
-                        ++i1;
-                    } else {
-                        ++i2;
+                    if (arr1[i1] == arr2[i2])
+                    {
+                        array[i] = arr1[i1];
+                        (*levelsMerged)[i] = levels1[i1++] + levels2[i2++];
+                    }
+                    else if (arr1[i1] < arr2[i2])
+                    {
+                        array[i] = arr1[i1];
+                        (*levelsMerged)[i] = levels1[i1++];
+                    }
+                    else
+                    {
+                        array[i] = arr2[i2];
+                        (*levelsMerged)[i] = levels2[i2++];
                     }
                     ++i;
                 }
                 while (i1 < size1) {
-                    array[i++] = arr1[i1++];
+                    array[i] = arr1[i1];
+                    (*levelsMerged)[i++] = levels1[i1++];
                 }
                 while (i2 < size2) {
-                    array[i++] = arr2[i2++];
+                    array[i] = arr2[i2];
+                    (*levelsMerged)[i++] = levels2[i2++];
                 }
+
+                *length = i;
             }
             catch (std::out_of_range& exception)
             {
                 delete[] array;
+                delete[] *levelsMerged;
             }
 
             return array;
         };
 
         //This uses the algorithm described & proved in the doc.
-        static std::unique_ptr<SumTree> AVLFromArray(int* arr, int size) {
+        static std::unique_ptr<SumTree> AVLFromArray(int* arr, int* inThisLevel, int size) {
             assert(size >= 0);
 
             std::unique_ptr<SumTree> tree = std::unique_ptr<SumTree>(new SumTree());
             if (size > 0)
             {
                 int m = (size % 2 == 0 ? size / 2 : (size + 1) / 2) - 1; //m=ceil(size/2)-1
-                tree->addNode(arr[m]); //O(1) since the tree is empty.
+                tree->addNode(arr[m], inThisLevel[m]); //O(1) since the tree is empty.
 
                 if (size == 2) {
-                    tree->addNode(arr[m + 1]); //O(1) since the tree is always sized 1 and this point.
+                    tree->addNode(arr[m + 1], inThisLevel[m + 1]); //O(1) since the tree is always sized 1 and this point.
                 } else if (size > 2) {
-                    tree->setLeftSubtree(AVLFromArray(arr, m));
-                    tree->setRightSubtree(AVLFromArray(arr + (m + 1), size - m - 1));
+                    tree->setLeftSubtree(AVLFromArray(arr, inThisLevel, m));
+                    tree->setRightSubtree(
+                            AVLFromArray(arr + (m + 1), inThisLevel + (m + 1), size - m - 1)
+                        );
                 }
             }
 
@@ -127,16 +150,16 @@ private:
         }
 
         //THIS RUINS THE PARAMETER TREES. Careful!
-        static std::unique_ptr<SumTree> mergeTrees(SumTree& t1, SumTree& t2, bool clone=true) {
-            int *t1arr = nullptr, *t2arr = nullptr, *merged = nullptr;
-            int totalSize = t1.getSize() + t2.getSize();
+        static std::unique_ptr<SumTree> mergeTrees(SumTree& t1, SumTree& t2) {
+            int *t1arr = nullptr, *t2arr = nullptr, *merged = nullptr,
+                *t1levels = nullptr, *t2levels = nullptr, *levelsMerged = nullptr, size;
             int levelZero = t1.levelZero + t2.levelZero;
             std::unique_ptr<SumTree> result;
             try {
-                t1arr = treeToArray(t1);
-                t2arr = treeToArray(t2);
-                merged = arrayMerge(t1arr, t1.getSize(), t2arr, t2.getSize());
-                result = treeFromArray(merged, totalSize);
+                t1arr = treeToArray(t1, &t1levels);
+                t2arr = treeToArray(t2, &t2levels);
+                merged = arrayMerge(t1arr, t1levels, t1.getSize(), t2arr, t2levels, t2.getSize(), &levelsMerged, &size);
+                result = treeFromArray(merged, levelsMerged, size);
                 result->levelZero = levelZero;
                 t1.clean();
                 t2.clean();
@@ -145,18 +168,12 @@ private:
 
             }
 
-            if (t1arr != nullptr)
-            {
-                delete[] t1arr;
-            }
-            if (t2arr != nullptr)
-            {
-                delete[] t2arr;
-            }
-            if (merged != nullptr)
-            {
-                delete[] merged;
-            }
+            delete[] t1arr;
+            delete[] t2arr;
+            delete[] merged;
+            delete[] levelsMerged;
+            delete[] t1levels;
+            delete[] t2levels;
 
             return result;
         }
@@ -378,6 +395,7 @@ private:
         inorderAux(action, curr->getLeft());
         action(
             curr->getLevel(),
+            curr->getInThisLevel(),
             curr->getHeight(),
             curr->getLeft() == nullptr ? int() : curr->getLeft()->getLevel(),
             curr->getRight() == nullptr ? int() : curr->getRight()->getLevel(),
@@ -809,7 +827,7 @@ public:
         return levelZero;
     }
 
-    void addNode(int level)
+    void addNode(int level, int inThisLevel = 1)
     {
         if (level == 0)
         {
@@ -817,7 +835,7 @@ public:
             return;
         }
 
-        SumTreeNode* newNode(new SumTreeNode(level));
+        SumTreeNode* newNode(new SumTreeNode(level, inThisLevel));
 
         if (root == nullptr)
         {
@@ -900,14 +918,14 @@ public:
         return found;
     }*/
 
-    static std::unique_ptr<SumTree> treeFromArray(int* arr, int size)
+    static std::unique_ptr<SumTree> treeFromArray(int* arr, int* levels, int size)
     {
-        return StaticAVLUtilities::AVLFromArray(arr, size);
+        return StaticAVLUtilities::AVLFromArray(arr, levels, size);
     }
 
-    static int* treeToArray(const SumTree& tree, bool reverse=false)
+    static int* treeToArray(const SumTree& tree, int** levels, bool reverse=false)
     {
-        return StaticAVLUtilities::treeToArray(tree, reverse);
+        return StaticAVLUtilities::treeToArray(tree, levels, reverse);
     }
 
     /*
