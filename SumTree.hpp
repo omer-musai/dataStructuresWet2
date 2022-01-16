@@ -297,11 +297,15 @@ private:
      * NOTE: THIS SHOULD ONLY BE CALLED ON NODES THAT ARE CONFIRMED TO BE IN THE TREE.
      * (That's while it takes a node despite only needing a level.)
      */
-    int lowerThan(const SumTreeNode* node) const
+    int lowerThan(const SumTreeNode* node, bool larger=true) const
     {
         if (node == nullptr)
         {
-            return root == nullptr ? 0 : root->getW();
+            if (larger)
+            {
+                return root == nullptr ? 0 : root->getW();
+            }
+            return 0;
         }
         int level = node->getLevel();
         int r = 0;
@@ -918,14 +922,14 @@ public:
     {
         SumTreeNode *bottom, *top;
         Order orderRel;
-        findLocationBounds(higherRange, orderRel, nullptr, &top);
+        findLocationBounds(higherRange, orderRel, &top, nullptr);
         int inTopLevel = top == nullptr ? 0 : top->getInThisLevel();
         if (lowerRange > 0)
         {
-            findLocationBounds(lowerRange, orderRel, &bottom, nullptr);
-            return lowerThan(top) + inTopLevel - (bottom == nullptr ? 0 : lowerThan(bottom));
+            findLocationBounds(lowerRange, orderRel, nullptr, &bottom);
+            return lowerThan(top, false) + inTopLevel - (bottom == nullptr ? 0 : lowerThan(bottom, true));
         }
-        return lowerThan(top) + inTopLevel + getLevelZero();
+        return lowerThan(top, false) + inTopLevel + getLevelZero();
     }
 
     //This should only be called if m <= player count.

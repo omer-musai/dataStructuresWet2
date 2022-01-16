@@ -2,10 +2,6 @@
 
 void GameSystem::mergeGroups(int id1, int id2)
 {
-    if(id1 == 5 && id2 == 65)
-    {
-        int x = 3; //TODO: remove
-    }
     players_by_level.assertDebug();
     if (id1 <= 0 || id2 <= 0)
     {
@@ -45,10 +41,6 @@ void GameSystem::addPlayer(const Player& player)
 
 void GameSystem::removePlayer(int playerId)
 {
-    if (playerId == 1158375578 || playerId == 1944417897)
-    {
-        int x = 3;
-    }
     players_by_level.assertDebug();
     if (playerId <= 0)
     {
@@ -63,10 +55,6 @@ void GameSystem::removePlayer(int playerId)
 
 void GameSystem::increasePlayerIDLevel(int playerId, int levelIncrease)
 {
-    if (playerId == 1158375578)
-    {
-        int x = 3; //TODO: remove
-    }
     players_by_level.assertDebug();
     if (playerId <= 0 || levelIncrease <= 0)
     {
@@ -95,6 +83,10 @@ void GameSystem::changePlayerIDScore(int playerId, int newScore)
 
 double GameSystem::getPercentOfPlayersWithScoreInBounds(int groupId, int score, int lowerLevel, int higherLevel)
 {
+    if (groupId == 0 && score == 145)
+    {
+        int x = 3; //TODO: remove
+    }
     players_by_level.assertDebug();
     if (groupId < 0 || groupId > k) //TODO: ensure the library2.cpp version of this checks for nullptr.
     {
@@ -121,10 +113,6 @@ double GameSystem::getPercentOfPlayersWithScoreInBounds(int groupId, int score, 
 double GameSystem::averageHighestPlayerLevelByGroup(int groupId, int m)
 {
     players_by_level.assertDebug();
-    if (groupId == 0 && m == 16)
-    {
-        int x = 3; //TODO: remove
-    }
     if (groupId < 0 || groupId > k || m <= 0)
     {
         throw InvalidInput("Invalid input to averageHighestPlayerLevelByGroup.");
