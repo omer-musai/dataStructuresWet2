@@ -45,7 +45,7 @@ void GameSystem::addPlayer(const Player& player)
 
 void GameSystem::removePlayer(int playerId)
 {
-    if (playerId == 1158375578)
+    if (playerId == 1158375578 || playerId == 1944417897)
     {
         int x = 3;
     }
@@ -63,7 +63,7 @@ void GameSystem::removePlayer(int playerId)
 
 void GameSystem::increasePlayerIDLevel(int playerId, int levelIncrease)
 {
-    if (playerId == 1466089782)
+    if (playerId == 1158375578)
     {
         int x = 3; //TODO: remove
     }
@@ -87,9 +87,10 @@ void GameSystem::changePlayerIDScore(int playerId, int newScore)
         throw InvalidInput("Invalid input to changePlayerIDScore.");
     }
 
-    Player p = players.search(playerId);
+    Player p = players.search(playerId), modified(p.getPlayerId(), p.getGroupId(), newScore);
+    modified.setLevel(p.getLevel());
     removePlayer(playerId);
-    addPlayer(p.getPlayerId(), p.getGroupId(), newScore);
+    addPlayer(modified);
 }
 
 double GameSystem::getPercentOfPlayersWithScoreInBounds(int groupId, int score, int lowerLevel, int higherLevel)
@@ -120,7 +121,7 @@ double GameSystem::getPercentOfPlayersWithScoreInBounds(int groupId, int score, 
 double GameSystem::averageHighestPlayerLevelByGroup(int groupId, int m)
 {
     players_by_level.assertDebug();
-    if (groupId == 0 && m == 9)
+    if (groupId == 0 && m == 16)
     {
         int x = 3; //TODO: remove
     }
