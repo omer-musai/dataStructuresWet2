@@ -436,8 +436,9 @@ private:
         //Make old root the right child of the new root:
         newRoot->setRight(oldRoot);
 
-        //Update the height that was affected:
+        //Update the heights, totalLevels and Ws that were affected:
         oldRoot->updateHeight();
+        newRoot->updateHeight();
 
         return newRoot;
     }
@@ -472,8 +473,9 @@ private:
         //Make old root the left child of the new root:
         newRoot->setLeft(oldRoot);
 
-        //Update the height that was affected:
+        //Update the heights, totalLevels and Ws that were affected:
         oldRoot->updateHeight();
+        newRoot->updateHeight();
 
         return newRoot;
     }
@@ -513,6 +515,7 @@ private:
         newRight->updateHeight();
         newLeft->updateHeight();
         newRoot->updateHeight();
+        if (rootParent != nullptr) rootParent->updateHeight();
 
         return newRoot;
     }
@@ -552,6 +555,7 @@ private:
         newRight->updateHeight();
         newLeft->updateHeight();
         newRoot->updateHeight();
+        if (rootParent != nullptr) rootParent->updateHeight();
 
         return newRoot;
     }
@@ -862,6 +866,11 @@ public:
     int getPlayerCount() const
     {
         return levelZero + (root == nullptr ? 0 : root->getW());
+    }
+
+    int getRootWDebug() const
+    {
+        return this->root->getW();
     }
 
     /*

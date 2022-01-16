@@ -42,6 +42,7 @@ void Group::init(int scale)
 
 void Group::addPlayer(const Player &player)
 {
+    assert(trees_array[0]->getPlayerCount() == playerCount);
     if (!initialized)
     {
         throw Failure("Tried to use uninitialized group (addPlayer).");
@@ -54,6 +55,7 @@ void Group::addPlayer(const Player &player)
 
 void Group::removePlayer(const Player &player)
 {
+    assert(trees_array[0]->getPlayerCount() == playerCount);
     if (!initialized)
     {
         throw Failure("Tried to use uninitialized group (removePlayer).");
@@ -66,6 +68,7 @@ void Group::removePlayer(const Player &player)
 
 SumTree** Group::getPlayers() const
 {
+    assert(trees_array[0]->getPlayerCount() == playerCount);
     if (!initialized)
     {
         throw Failure("Tried to use uninitialized group (getPlayers).");
@@ -75,6 +78,7 @@ SumTree** Group::getPlayers() const
 
 void Group::mergeGroups(Group &g)
 {
+    assert(trees_array[0]->getPlayerCount() == playerCount);
     if (!initialized || !g.initialized)
     {
         throw Failure("Tried to use uninitialized group (mergeGroups).");
@@ -89,10 +93,13 @@ void Group::mergeGroups(Group &g)
         delete toFree2;
         g.trees_array[i] = nullptr; //The dtor will still go over that one. Don't wanna double free.
     }
+
+    playerCount = trees_array[0]->getPlayerCount();
 }
 
 int Group::countPlayersWithScoreInRange(int lowerLevel, int higherLevel, int score) const
 {
+    assert(trees_array[0]->getPlayerCount() == playerCount);
     if (!initialized)
     {
         throw Failure("Tried to use uninitialized group (countPlayersWithScoreInRange).");
@@ -103,6 +110,7 @@ int Group::countPlayersWithScoreInRange(int lowerLevel, int higherLevel, int sco
 
 int Group::countPlayersInRange(int lowerLevel, int higherLevel) const
 {
+    assert(trees_array[0]->getPlayerCount() == playerCount);
     if (!initialized)
     {
         throw Failure("Tried to use uninitialized group (countPlayersInRange).");
@@ -113,6 +121,7 @@ int Group::countPlayersInRange(int lowerLevel, int higherLevel) const
 
 int Group::getPlayerCount() const
 {
+    assert(trees_array[0]->getPlayerCount() == playerCount);
     if (!initialized)
     {
         throw Failure("Tried to use uninitialized group (getPlayerCount).");
@@ -123,6 +132,7 @@ int Group::getPlayerCount() const
 
 int Group::sumLevelOfTopM(int m) const
 {
+    assert(trees_array[0]->getPlayerCount() == playerCount);
     if (!initialized)
     {
         throw Failure("Tried to use uninitialized group (sumLevelOfTopM).");

@@ -52,10 +52,13 @@ Group& GroupsUnionFind::uniteGroups(int id1, int id2)
     id2 = findGroupId(id2);
     if (id1 == id2)
     {
-        throw Failure ("Tried to merge groups that were already merged.");
+        //throw Failure ("Tried to merge groups that were already merged.");
+        return sets[id1 - 1]; //Apparently this is considered a success.
     }
-    int from = id1 <= id2 ? id1 : id2,
-            to = id1 <= id2 ? id2 : id1;
+    const Group& g1 = findGroup(id1);
+    const Group& g2 = findGroup(id2);
+    int from = g1.getPlayerCount() <= g2.getPlayerCount() ? id1 : id2,
+            to = g1.getPlayerCount() <= g2.getPlayerCount() ? id2 : id1;
 
     parents[from - 1] = to;
 

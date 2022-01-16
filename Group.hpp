@@ -23,6 +23,12 @@ class Group
         Group(Group& g) = delete;
         Group& operator=(Group& g) = delete;
 
+        bool assertDebug() const
+        {
+            assert(trees_array[0]->getPlayerCount() == playerCount);
+            return trees_array[0]->getPlayerCount() == playerCount;
+        }
+
         void addPlayer(const Player& player);
 
         void removePlayer(const Player& player);
