@@ -20,7 +20,7 @@ private:
 	int height;
 
 public:
-    explicit SumTreeNode(int level=0) : level(level), inThisLevel(1), totalLevel(1), w(1), left(nullptr), right(nullptr), parent(nullptr), height(0)
+    explicit SumTreeNode(int level) : level(level), inThisLevel(1), totalLevel(level), w(1), left(nullptr), right(nullptr), parent(nullptr), height(0)
     {}
 
     SumTreeNode& operator=(SumTreeNode& other) = delete;
@@ -40,14 +40,14 @@ public:
     void increaseInThisLevel()
     {
         ++(this->inThisLevel);
-        ++(this->totalLevel);
+        this->totalLevel += level;
         ++(this->w);
     }
 
     void decreaseInThisLevel()
     {
         --(this->inThisLevel);
-        --(this->totalLevel);
+        this->totalLevel -= level;
         --(this->w);
     }
 

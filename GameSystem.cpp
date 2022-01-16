@@ -83,10 +83,6 @@ void GameSystem::changePlayerIDScore(int playerId, int newScore)
 
 double GameSystem::getPercentOfPlayersWithScoreInBounds(int groupId, int score, int lowerLevel, int higherLevel)
 {
-    if (groupId == 0 && score == 145)
-    {
-        int x = 3; //TODO: remove
-    }
     players_by_level.assertDebug();
     if (groupId < 0 || groupId > k) //TODO: ensure the library2.cpp version of this checks for nullptr.
     {
@@ -112,6 +108,10 @@ double GameSystem::getPercentOfPlayersWithScoreInBounds(int groupId, int score, 
 
 double GameSystem::averageHighestPlayerLevelByGroup(int groupId, int m)
 {
+    if (groupId == 51 && m == 7)
+    {
+        int x = 3; //TODO: remove
+    }
     players_by_level.assertDebug();
     if (groupId < 0 || groupId > k || m <= 0)
     {
