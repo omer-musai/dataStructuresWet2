@@ -314,16 +314,8 @@ private:
      * NOTE: THIS SHOULD ONLY BE CALLED ON NODES THAT ARE CONFIRMED TO BE IN THE TREE.
      * (That's while it takes a node despite only needing a level.)
      */
-    int lowerThan(const SumTreeNode* node, bool larger=true) const
+    int lowerThan(const SumTreeNode* node) const
     {
-        if (node == nullptr)
-        {
-            if (larger)
-            {
-                return root == nullptr ? 0 : root->getW();
-            }
-            return 0;
-        }
         int level = node->getLevel();
         int r = 0;
         SumTreeNode* curr = root;
@@ -936,18 +928,30 @@ public:
         return StaticAVLUtilities::mergeTrees(t1, t2).release();
     }
 
-    int countInRange(int lowerRange, int higherRange) const
+    int countInRange(int lowerRange, int upperRange) const
     {
+        if (upperRange < 0 || lowerRange > upperRange) return 0;
+
         SumTreeNode *bottom, *top;
         Order orderRel;
-        findLocationBounds(higherRange, orderRel, &top, nullptr);
-        int inTopLevel = top == nullptr ? 0 : top->getInThisLevel();
+        findLocationBounds(upperRange, orderRel, &top, nullptr);
+        if (top == nullptr) //upperRange is above 0 but below the minimal node.
+        {
+            return lowerRange <= 0 ? levelZero : 0;
+        }
+        if (lowerRange == upperRange)
+        {
+            return orderRel == equal ? top->getInThisLevel() : 0;
+        }
+
         if (lowerRange > 0)
         {
             findLocationBounds(lowerRange, orderRel, nullptr, &bottom);
-            return lowerThan(top, false) + inTopLevel - (bottom == nullptr ? 0 : lowerThan(bottom, true));
+            return bottom == nullptr ? 0 //lowerRange > max
+                : lowerThan(top) + top->getInThisLevel() - lowerThan(bottom);
         }
-        return lowerThan(top, false) + inTopLevel + getLevelZero();
+        return lowerThan(top) + top->getInThisLevel() + getLevelZero();
+
     }
 
     //This should only be called if m <= player count.
