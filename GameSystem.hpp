@@ -15,11 +15,6 @@ class GameSystem
         int k;
         int scale;
         void addPlayer(const Player& player);
-
-        void debug()
-        {
-            players.countDebug(&groups);
-        }
     public:
         GameSystem(int k, int scale) : players_by_level(scale), players(), groups(k, scale), k(k), scale(scale) {}
         void mergeGroups(int id1, int id2);

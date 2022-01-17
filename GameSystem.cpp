@@ -19,10 +19,6 @@ void GameSystem::mergeGroups(int id1, int id2)
 
 void GameSystem::addPlayer(int playerId, int groupId, int score)
 {
-    if (playerId == 684052856)
-    {
-        int x = 3; //todo remove
-    }
     players_by_level.assertDebug();
     Player p(playerId, groupId, score);
     addPlayer(p);
@@ -59,10 +55,6 @@ void GameSystem::removePlayer(int playerId)
 
 void GameSystem::increasePlayerIDLevel(int playerId, int levelIncrease)
 {
-    if (playerId == 684052856)
-    {
-        int x = 3; //todo remove
-    }
     players_by_level.assertDebug();
     if (playerId <= 0 || levelIncrease <= 0)
     {
@@ -91,14 +83,6 @@ void GameSystem::changePlayerIDScore(int playerId, int newScore)
 
 double GameSystem::getPercentOfPlayersWithScoreInBounds(int groupId, int score, int lowerLevel, int higherLevel)
 {
-    if (lowerLevel == 11 && higherLevel == 11)
-    {
-        int x = 3;
-    }
-    if (lowerLevel == 1 && higherLevel == 1 && score == 52 && groupId == 0)
-    {
-        int x = 3;
-    }
     players_by_level.assertDebug();
     if (groupId < 0 || groupId > k) //TODO: ensure the library2.cpp version of this checks for nullptr.
     {

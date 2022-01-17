@@ -6,8 +6,6 @@
 #include "GroupsUnionFind.hpp"
 #include <cassert>
 
-#include <iostream>//todo: remove
-
 /*
  * Dynamic hash table using separate hashing and mod n (with n being the current table's tableLength)
  * as a hash function.
@@ -23,7 +21,7 @@ private:
         Node *next;
 
     public:
-        Node(const Player& player, Node* next=nullptr)
+        explicit Node(const Player& player, Node* next=nullptr)
                 : player(player), next(next) //Copy it. Just a bunch of primitive fields.
         {}
         Node() : player(illegal, illegal, illegal), next(nullptr) //For array initialization.
@@ -82,22 +80,6 @@ private:
 
     Node* findNode(int playerId) const;
 public:
-    int countDebug(GroupsUnionFind* uf = nullptr) const
-    {
-        int bucket = 0;
-        for (int cnt = 0; cnt < tableLength; ++cnt)
-        {
-            Node *curr = table[cnt];
-            while (curr != nullptr)
-            {
-                std::cout << curr->getId() << ", " <<
-                       (uf == nullptr ? curr->getPlayer().getGroupId()
-                       : uf->debug(curr->getPlayer().getGroupId())) << std::endl;
-                ++bucket; curr = curr->getNext();
-            }
-        }
-        return bucket;
-    }
     PlayersHashTable() : tableLength(defaultStartingLength), playerCount(0), table(new Node*[tableLength]())
     {}
     PlayersHashTable(const PlayersHashTable& other) = delete;

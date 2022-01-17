@@ -30,10 +30,6 @@ class Player
             {
                 return level;
             }
-            void setScore(int new_score)
-            {
-                this->score = new_score;
-            }
             void setLevel(int new_level)
             {
                 this->level = new_level;

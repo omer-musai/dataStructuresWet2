@@ -340,21 +340,6 @@ private:
         return -1;
     }
 
-    /*template <class K>
-    SumTreeNode* findByKey(K key, bool* found)
-    {
-        int value(key);
-        Order orderRel;
-        SumTreeNode* node = findLocation(value, orderRel);
-        if (found != nullptr)
-        {
-            *found = !(node == nullptr || orderRel != equal);
-        }
-        return node;
-    }*/
-
-    //TODO: remove the vast commented-out portions once certain they're not needed.
-
     //Updates heights and returns the lowest node with an invalid balance factor.
     void updateTree(SumTreeNode* node)
     {
@@ -881,34 +866,6 @@ public:
     {
         return levelZero + (root == nullptr ? 0 : root->getW());
     }
-
-    int getRootWDebug() const
-    {
-        return this->root->getW();
-    }
-
-    /*
-     * This function emulates searching an object by key. (For example: getValuePtr(Group(3)) to find group with id==3.)
-     */
-    /*template <class K>
-    T* getLevelPtr(K key)
-    {
-        bool found;
-        SumTreeNode* node = findByKey(key, &found);
-        if (!found)
-        {
-            throw Failure("Tried to fetch non-existent node.");
-        }
-        return &(node->getLevel());
-    }*/
-
-    /*template <class K>
-    bool isInTree(K key)
-    {
-        bool found;
-        findByKey(key, &found);
-        return found;
-    }*/
 
     static std::unique_ptr<SumTree> treeFromArray(int* arr, int* levels, int size)
     {

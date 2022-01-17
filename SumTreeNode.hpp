@@ -16,13 +16,12 @@ private:
 	int inThisLevel;
 	int totalLevel;
 	int w;
-    
 	int height;
 
 public:
     explicit SumTreeNode(int level, int inThisLevel = 1)
-        :   level(level), inThisLevel(inThisLevel), totalLevel(level),
-            w(1), left(nullptr), right(nullptr), parent(nullptr), height(0)
+        :   left(nullptr), right(nullptr), parent(nullptr), level(level),
+            inThisLevel(inThisLevel), totalLevel(level), w(1), height(0)
     {
         updateHeight();
     }
@@ -98,7 +97,7 @@ public:
         return height;
     }
 
-    int getLevel() const //TODO: consdier making this const (check if this is bad, RE: SumTree->addNode).
+    int getLevel() const
     {
         return level;
     }
@@ -111,11 +110,6 @@ public:
 	int getW() const
     {
         return w;
-    }
-	
-	int getTotalLevel() const
-    {
-        return totalLevel;
     }
 
     int getLeftHeight() const
@@ -158,7 +152,7 @@ public:
         other->inThisLevel = inThisLevel;
         inThisLevel = temp;
 
-        temp = other->w;
+        //The rest of the fields get fixed by updateHeight calls.
     }
 };
 

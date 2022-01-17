@@ -1,6 +1,5 @@
 #include "library2.h"
 #include "GameSystem.hpp"
-#include "game_exceptions.hpp"
 
 #define TRY_CATCH_WRAP(action) \
 if (DS == NULL)                \
@@ -24,9 +23,6 @@ catch(InvalidInput& exc)       \
 }                              \
 return SUCCESS
 
-//TODO:
-//* Ensure order of exceptions.
-//* Ensure every time FAILURE is thrown, the data structure returns to its previous state.
 
 void *Init(int k, int scale)
 {
